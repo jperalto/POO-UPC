@@ -48,25 +48,27 @@ class Administrador
 		arregloVisitantes.push(visitante)
 	end
 	def registrar_visita(fecha, nroDpto, dni, nombre)
+		date = Date.parse(fecha)
 		existe = false
 		for visitante in arregloVisitantes
 			if visitante.dni == dni
 				existe = true
-				visita = Visita.new(nroDpto, fecha)
+				visita = Visita.new(nroDpto, date)
 				visitante.registrar_visita(visita)
 			end
 		end
 		if existe == false
 			visitante = Visitante.new(dni, nombre)
-			visita = Visita.new(nroDpto, fecha)
+			visita = Visita.new(nroDpto, date)
 			visitante.registrar_visita(visita)
 			registrar_visitante(visitante)
 		end
 	end
 	def consultar_visita_fecha(fecha)
+		date = Date.parse(fecha)
 		for visitante in arregloVisitantes
 			for visita in visitante.arregloVisitas
-				if visita.fecha == fecha
+				if visita.fecha == date
 					puts "#{visitante.nombre} visitó al dpto #{visita.nroDpto}"
 				end
 			end
@@ -95,7 +97,8 @@ end
 class Visita
 	attr_accessor :nroDpto, :fecha
 	def initialize(nroDpto, fecha)
-		@nroDpto, @fecha = nroDpto, fecha
+		@nroDpto = nroDpto
+		@fecha = fecha
 	end
 end
 
@@ -141,6 +144,7 @@ class Familiar
 	end
 end
 
+
 class TestCondominio < Test::Unit::TestCase
 	def setup
 		@condominio1 = Administrador.new
@@ -182,9 +186,9 @@ class TestCondominio < Test::Unit::TestCase
 		@condominio1.generar_recibo_mantenimiento(8, 2019)
 		@visitante1 = Visitante.new(12452412, "Frank Soto")
 		@condominio1.registrar_visitante(@visitante1)
-		@condominio1.registrar_visita("01/09/2019", 101, 12452412, "Frank Soto")
-		@condominio1.registrar_visita("01/09/2019", 101, 12388412, "Carla Fuentes")
-		@condominio1.registrar_visita("01/09/2019", 301, 98231234, "Pedro Aquino")
+		@condominio1.registrar_visita("2019-09-01", 101, 12452412, "Frank Soto")
+		@condominio1.registrar_visita("2019-09-01", 101, 12388412, "Carla Fuentes")
+		@condominio1.registrar_visita("2019-09-01", 301, 98231234, "Pedro Aquino")
 	end
 	def testRegistrarReciboGeneral
 		@condominio1.registrar_recibo("Agua", 7, 2019, 1320)
@@ -232,7 +236,7 @@ class TestCondominio < Test::Unit::TestCase
 		condominio1 = @condominio1
 		puts
 		puts "--------- RegistrarVisita (Visitante ya registrado) ---------"
-		condominio1.registrar_visita("10/09/2019", 202, 12452412, "Frank Soto")
+		condominio1.registrar_visita("2019-09-10", 202, 12452412, "Frank Soto")
 		for visitante in condominio1.arregloVisitantes
 			puts "Visitante #{visitante.nombre} (dni #{visitante.dni})"
 			for visita in visitante.arregloVisitas
@@ -241,7 +245,7 @@ class TestCondominio < Test::Unit::TestCase
 		end
 		puts
 		puts "--------- RegistrarVisita (Nuevo Visitante) ---------"
-		condominio1.registrar_visita("15/09/2019", 101, 43123323, "Carlos Gutierrez")
+		condominio1.registrar_visita("2019-09-15", 101, 43123323, "Carlos Gutierrez")
 		for visitante in condominio1.arregloVisitantes
 			puts "Visitante #{visitante.nombre} (dni #{visitante.dni})"
 			for visita in visitante.arregloVisitas
