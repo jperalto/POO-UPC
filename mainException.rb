@@ -240,23 +240,25 @@ class Controlador
 	end
 	def registrarDpto(nroDpto, tipo, cant_hab, piso)
 		existe = adm.validar_dpto(nroDpto)
-		if existe
-			vista.mostrar("Error. El departamento #{nroDpto} ya existe.")
-		else
-			dpto = adm.registrar_dpto(nroDpto, tipo, cant_hab, piso)
-			vista.mostrar("Éxito. Se registró el departamento #{nroDpto}:")
-			#vista.mostrarDpto(dpto)
-		end
+		if !existe
+			begin
+	    	    dpto = adm.registrar_dpto(nroDpto, tipo, cant_hab, piso)
+				vista.mostrar("Éxito. Se registró el departamento #{nroDpto}:")
+		      rescue Exception => e
+		      	vista.mostrar(e.message)
+	      	end
+	     end
 	end
+
 	def registrarPropietario(nroDpto, dni, nombre)
 		existe = adm.validar_dpto(nroDpto)
 		if existe
-			prop = adm.registrar_propietario(nroDpto, dni, nombre)
-			vista.mostrar("Éxito. Se registró al propietario #{nombre}:")
-			#vista.mostrarPropietario(prop)
-		else
-			vista.mostrar("Error. El departamento #{nroDpto} NO existe.")
-			vista.mostrar("")
+			begin
+				prop = adm.registrar_propietario(nroDpto, dni, nombre)
+				vista.mostrar("Éxito. Se registró al propietario #{nombre}:")
+			rescue Exception => e
+				vista.mostrar(e.message)
+			end
 		end
 	end
 	def registrarReciboGeneral(servicio, mes, año, monto)
@@ -318,6 +320,8 @@ vista = Vista.new
 controlador = Controlador.new(vista, condominio1)
 controlador.registrarDpto("D101", "Flat", 3, 1)
 controlador.registrarDpto("D101", "Loft", 1, 1)
+controlador.registrarDpto("D101", "Loft", 1, 1)
+controlador.registrarDpto("D102", "Loft", 1, 1)
 controlador.registrarDpto("D102", "Loft", 1, 1)
 controlador.registrarDpto("D201", "Flat", 3, 1)
 controlador.registrarDpto("D202", "Flat", 3, 1)
@@ -347,121 +351,3 @@ controlador.registrarVisita("2019-10-06", "D302", "93424553", "Andre Guerrero")
 controlador.consultarVisitasPorFecha("2019-10-06")
 controlador.consultarVisitaPorRangoFecha("2019-10-04", "2019-10-05")
 controlador.consultarVisitaPorDni("93424553")
-
-
-# class TestCondominio < Test::Unit::TestCase
-# 	def setup
-# 		@condominio1 = Administrador.new
-# 		@propietario1 = Propietario.new("P001", 81491462, "Alex Ramirez")
-# 		@propietario2 = Propietario.new("P002", 14628149, "Lucia Fernandez")
-# 		@propietario3 = Propietario.new("P003", 15546281, "Jose Castañeda")
-# 		@propietario4 = Propietario.new("P004", 95128149, "Andre Guerrero")
-# 		@propietario5 = Propietario.new("P005", 63932343, "Fernanda Galvez")
-# 		@propietario6 = Propietario.new("P006", 74343123, "Katy Perez")
-# 		@dpto1 = Departamento.new(101, @propietario1.codigo_propietario)
-# 		@dpto2 = Departamento.new(102, @propietario2.codigo_propietario)
-# 		@dpto3 = Departamento.new(201, @propietario3.codigo_propietario)
-# 		@dpto4 = Departamento.new(202, @propietario4.codigo_propietario)
-# 		@dpto5 = Departamento.new(301, @propietario5.codigo_propietario)
-# 		@dpto6 = Departamento.new(302, @propietario6.codigo_propietario)
-# 		@familiar1 = Familiar.new(92341142, "Carlos Saenz", "Hermano")
-# 		@familiar2 = Familiar.new(94523123, "Eusebia Rosas", "Mamá")
-# 		@familiar3 = Familiar.new(41234555, "Fernando Lopez", "Papá")
-# 		@familiar4 = Familiar.new(13413462, "Jair Fajardo", "Hermano")
-# 		@familiar5 = Familiar.new(51235124, "Josefa Ruiz", "Hija")
-# 		@familiar6 = Familiar.new(41213452, "Luis Perez", "Esposo")
-# 		@propietario1.registrar_familiar(@familiar1)
-# 		@propietario2.registrar_familiar(@familiar2)
-# 		@propietario3.registrar_familiar(@familiar3)
-# 		@propietario4.registrar_familiar(@familiar4)
-# 		@propietario5.registrar_familiar(@familiar5)
-# 		@propietario6.registrar_familiar(@familiar6)
-# 		@condominio1.registrar_dpto(@dpto1)
-# 		@condominio1.registrar_dpto(@dpto2)
-# 		@condominio1.registrar_dpto(@dpto3)
-# 		@condominio1.registrar_dpto(@dpto4)
-# 		@condominio1.registrar_dpto(@dpto5)
-# 		@condominio1.registrar_dpto(@dpto6)
-# 		@condominio1.registrar_recibo("Agua", 8, 2019, 1320)
-# 		@condominio1.registrar_recibo("Luz", 8, 2019, 1582)
-# 		@condominio1.registrar_recibo("Vigilancia", 8, 2019, 2048)
-# 		@condominio1.registrar_recibo("Limpieza", 8, 2019, 850)
-# 		@condominio1.registrar_recibo("Areas Comunes", 8, 2019, 520)
-# 		@condominio1.generar_recibo_mantenimiento(8, 2019)
-# 		@visitante1 = Visitante.new(12452412, "Frank Soto")
-# 		@condominio1.registrar_visitante(@visitante1)
-# 		@condominio1.registrar_visita("2019-09-01", 101, 12452412, "Frank Soto")
-# 		@condominio1.registrar_visita("2019-09-01", 101, 12388412, "Carla Fuentes")
-# 		@condominio1.registrar_visita("2019-09-01", 301, 98231234, "Pedro Aquino")
-# 	end
-# 	def testRegistrarReciboGeneral
-# 		@condominio1.registrar_recibo("Agua", 7, 2019, 1320)
-# 		puts
-# 		puts "--------- RegistrarReciboGeneral ---------"
-# 		for recibo in @condominio1.arregloRecibosGenerales
-# 			puts "#{recibo.servicio} #{recibo.mes} #{recibo.año} #{recibo.monto}"
-# 		end
-# 		puts
-# 	end
-# 	def testGenerarReciboMantenimiento
-# 		condominio1 = @condominio1
-# 		@condominio1.registrar_recibo("Agua", 9, 2019, 1320)
-# 		@condominio1.registrar_recibo("Luz", 9, 2019, 1582)
-# 		@condominio1.registrar_recibo("Vigilancia", 9, 2019, 2048)
-# 		@condominio1.registrar_recibo("Limpieza", 9, 2019, 850)
-# 		@condominio1.registrar_recibo("Areas Comunes", 9, 2019, 520)
-# 		mes = 9
-# 		año = 2019
-# 		recibo = condominio1.generar_recibo_mantenimiento(mes, año)
-# 		puts
-# 		puts "--------- GenerarReciboMantenimiento ---------"
-# 		puts "#{recibo.mes} #{recibo.año} #{recibo.monto} #{recibo.estado} #{recibo.fecha_pago}"
-# 		for dpto in condominio1.arregloDepartamentos
-# 			puts "Recibos Dpto: #{dpto.nroDpto}"
-# 			for recibo in dpto.arreglo_recibos_mantenimiento
-# 				puts "  #{recibo.mes} #{recibo.año} #{recibo.monto} #{recibo.estado} #{recibo.fecha_pago}"
-# 			end
-# 		end
-# 		puts
-# 	end
-# 	def testRegistrarPagoMantenimiento
-# 		condominio1 = @condominio1
-# 		dpto = 101
-# 		mes = 8
-# 		año = 2019
-# 		fecha_pago = "01/09/2019"
-# 		puts
-# 		puts "--------- RegistrarPagoMantenimiento ---------"
-# 		recibo = condominio1.registrar_pago_mantenimiento(dpto, mes, año, fecha_pago)
-# 		puts "Recibo Actualizado Dpto: #{dpto}"
-# 		puts "#{recibo.mes} #{recibo.año} #{recibo.monto} #{recibo.estado} #{recibo.fecha_pago}"
-# 	end
-# 	def testRegistrarVisita
-# 		condominio1 = @condominio1
-# 		puts
-# 		puts "--------- RegistrarVisita (Visitante ya registrado) ---------"
-# 		condominio1.registrar_visita("2019-09-10", 202, 12452412, "Frank Soto")
-# 		for visitante in condominio1.arregloVisitantes
-# 			puts "Visitante #{visitante.nombre} (dni #{visitante.dni})"
-# 			for visita in visitante.arregloVisitas
-# 				puts "   #{visita.nroDpto} #{visita.fecha}"
-# 			end
-# 		end
-# 		puts
-# 		puts "--------- RegistrarVisita (Nuevo Visitante) ---------"
-# 		condominio1.registrar_visita("2019-09-15", 101, 43123323, "Carlos Gutierrez")
-# 		for visitante in condominio1.arregloVisitantes
-# 			puts "Visitante #{visitante.nombre} (dni #{visitante.dni})"
-# 			for visita in visitante.arregloVisitas
-# 				puts "   #{visita.nroDpto} #{visita.fecha}"
-# 			end
-# 		end
-# 	end
-# 	def testConsultarVisitaFecha
-# 		condominio1 = @condominio1
-# 		puts
-# 		puts "--------- ConsultarVisitaFecha ---------"
-# 		condominio1.consultar_visita_fecha("01/09/2019")
-# 		puts
-# 	end
-# end
